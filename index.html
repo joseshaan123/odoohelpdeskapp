@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Odoo Helpdesk – AI demo</title>
+<style>
+:root{--bg:#fff;--bg2:#f8f9fa;--fg:#212529;--mu:#6c757d;--ln:#d8dadd;--pr:#714b67;--prh:#5d3d55;--tl:#017e84;--tlb:#e6f3f4;--rd:#d44c59;--note:#fff8dc;--sh:0 8px 28px rgba(0,0,0,.18);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1c1e21;--bg2:#25282c;--fg:#e6e8ea;--mu:#9aa1a8;--ln:#3a3e44;--tlb:#123c3f;--note:#3a3620;--pr:#a4709a;--prh:#b884ad}}
+:root[data-theme="dark"]{--bg:#1c1e21;--bg2:#25282c;--fg:#e6e8ea;--mu:#9aa1a8;--ln:#3a3e44;--tlb:#123c3f;--note:#3a3620;--pr:#a4709a;--prh:#b884ad}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--fg);font:14px/1.5 "Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+button{font:inherit;color:inherit;cursor:pointer}
+.nav{display:flex;align-items:center;gap:22px;padding:0 18px;height:52px;flex:none}
+.logo{display:flex;align-items:center;gap:10px;font-size:19px}
+.logo i{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#1fb5a6,#3b8bd9);display:grid;place-items:center;color:#fff;font-style:normal;font-weight:700}
+.nav a{color:var(--fg);text-decoration:none;cursor:pointer;font-size:15px}
+.nav a:hover{color:var(--pr)}
+.sp{flex:1}
+.ic{position:relative;background:none;border:0;padding:4px;font-size:19px;line-height:1}
+.bd{position:absolute;top:-6px;right:-8px;background:#d44c59;color:#fff;border-radius:9px;font-size:11px;padding:0 5px;line-height:16px}
+.aib{font-weight:800;font-size:18px;background:linear-gradient(90deg,#e0407a,#f5a623,#3b8bd9);-webkit-background-clip:text;background-clip:text;color:transparent}
+.av{width:32px;height:32px;border-radius:50%;background:#e9c46a;color:#3a2d00;display:grid;place-items:center;font-weight:700;font-size:12px;flex:none}
+.cp{display:flex;align-items:center;gap:14px;padding:8px 18px;border-bottom:1px solid var(--ln);flex:none;min-height:56px}
+.btn{border:1px solid var(--ln);background:var(--bg);border-radius:4px;padding:6px 12px}
+.btn:hover{background:var(--bg2)}
+.btn.p{background:var(--pr);border-color:var(--pr);color:#fff}.btn.p:hover{background:var(--prh)}
+.bc{min-width:0;flex:1}
+.bc small{display:block;color:var(--mu)}.bc small b{color:var(--tl);font-weight:500;cursor:pointer}
+.bc div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:15px}
+.stat{display:flex;gap:8px;align-items:center;border:1px solid var(--ln);border-radius:4px;padding:2px 12px;font-size:13px;line-height:1.2;cursor:pointer}
+.pg{display:flex;align-items:center;gap:8px;color:var(--mu)}
+.pg button{border:1px solid var(--ln);background:var(--bg);width:36px;height:34px;border-radius:4px}
+main{flex:1;display:flex;min-height:0}
+.form{flex:1;overflow:auto;min-width:0}
+.bar{display:flex;align-items:stretch;justify-content:space-between;padding:10px 18px;gap:10px;background:var(--bg2);position:sticky;top:0;z-index:2;flex-wrap:wrap}
+.stages{display:flex;position:relative}
+.stages button{border:1px solid var(--ln);background:var(--bg);padding:6px 20px 6px 22px;margin-left:-6px;clip-path:polygon(0 0,calc(100% - 12px) 0,100% 50%,calc(100% - 12px) 100%,0 100%,12px 50%);border-radius:0}
+.stages button:first-child{clip-path:polygon(0 0,calc(100% - 12px) 0,100% 50%,calc(100% - 12px) 100%,0 100%);margin-left:0}
+.stages button.on{background:var(--tlb);color:var(--tl);box-shadow:inset 0 0 0 1px var(--tl)}
+.stages em{font-style:normal;color:var(--mu);margin-left:6px;font-size:12px}
+.menu{position:absolute;right:0;top:100%;background:var(--bg);border:1px solid var(--ln);box-shadow:var(--sh);border-radius:4px;z-index:5;display:none;min-width:140px}
+.menu.show{display:block}
+.menu div{padding:8px 14px;cursor:pointer}.menu div:hover{background:var(--bg2)}
+.sheet{padding:18px 18px 30px;max-width:980px}
+h1{font-weight:400;font-size:34px;line-height:1.25;margin:6px 0 20px}
+.pills{display:flex;gap:10px;align-items:center;margin-bottom:24px;flex-wrap:wrap}
+.pill{background:var(--bg2);border:1px solid var(--ln);border-radius:14px;padding:2px 12px;font-size:13px}
+.late{color:var(--rd)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 30px}
+.row{display:flex;gap:14px;align-items:center;min-height:34px}
+.row b{width:112px;flex:none}
+.stars{font-size:22px;color:#f0b400;cursor:pointer;letter-spacing:2px}.stars .off{color:var(--ln)}
+.tag{background:var(--pr);color:#fff;border-radius:10px;padding:0 10px;font-size:12px;margin-right:4px}
+.tabs{display:flex;margin-top:30px;border-bottom:1px solid var(--ln)}
+.tabs button{background:none;border:1px solid transparent;border-bottom:0;padding:10px 20px;color:var(--mu)}
+.tabs button.on{border-color:var(--ln);border-top:2px solid var(--pr);color:var(--fg);background:var(--bg);margin-bottom:-1px}
+.desc{padding:22px 4px;white-space:pre-wrap;min-height:120px}
+.chat{width:38%;min-width:360px;max-width:640px;border-left:1px solid var(--ln);overflow:auto;padding:12px 18px 24px;flex:none}
+.ct{display:flex;gap:8px;align-items:center}
+.ct button.t{border:1px solid var(--ln);background:var(--bg);padding:6px 12px;border-radius:4px}
+.ct button.t.on{border-color:var(--pr);color:var(--pr)}
+.ct .sp~span{color:var(--mu);font-size:17px;padding:0 5px}
+.rc{margin:14px 0 8px}.rc span.pl{background:var(--tlb);color:var(--tl);border-radius:12px;padding:1px 10px;margin:0 6px;cursor:pointer}
+.cmp{display:flex;gap:12px}
+.cmp textarea{flex:1;border:1px solid var(--ln);border-radius:20px;padding:12px 16px;font:inherit;resize:none;min-height:50px;background:var(--bg);color:var(--fg);outline:none}
+.cmp textarea:focus{border-color:var(--pr)}
+.cb{display:flex;align-items:center;gap:14px;margin:10px 0 0 50px}
+.cb .btn{padding:6px 14px}.cb .btn:disabled{opacity:.45;cursor:default}
+.cb .g{background:none;border:0;font-size:18px;color:var(--mu);padding:2px}.cb .g:hover{color:var(--pr)}
+.sep{text-align:center;color:var(--mu);font-size:13px;margin:26px 0 14px;border-top:1px solid var(--ln);line-height:0}
+.sep span{background:var(--bg);padding:0 12px}
+.msg{display:flex;gap:12px;margin-bottom:22px}
+.msg .body{flex:1;min-width:0}
+.msg.note .txt{background:var(--note);border-radius:6px;padding:8px 12px}
+.hd b{margin-right:8px}.hd span{color:var(--mu);font-size:12px}
+.txt{white-space:pre-wrap;margin-top:6px}
+.acts{display:flex;justify-content:center;gap:6px;margin-top:14px}
+.acts .btn{background:var(--pr);border-color:var(--pr);color:#fff;font-weight:500}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#2b2e33;color:#fff;padding:9px 18px;border-radius:6px;box-shadow:var(--sh);opacity:0;pointer-events:none;transition:opacity .2s;z-index:30;max-width:90%}
+.toast.show{opacity:1}
+.ai{position:absolute;right:16px;bottom:16px;width:min(390px,calc(100% - 24px));height:min(540px,calc(100% - 70px));background:var(--bg);border:1px solid var(--ln);border-radius:10px;box-shadow:var(--sh);display:none;flex-direction:column;z-index:20;overflow:hidden}
+.ai.show{display:flex}
+.ah{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--ln);background:var(--bg2)}
+.ah small{color:var(--mu);display:block;line-height:1.2}
+.ah .x{margin-left:auto;background:none;border:0;font-size:18px;color:var(--mu)}
+.al{flex:1;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
+.b{max-width:88%;padding:8px 12px;border-radius:12px;white-space:pre-wrap}
+.b.a{background:var(--bg2);border:1px solid var(--ln);align-self:flex-start}
+.b.u{background:var(--pr);color:#fff;align-self:flex-end}
+.b .btn{margin-top:8px;display:block;font-size:13px}
+.dots span{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--mu);margin:0 2px;animation:bl 1s infinite}
+.dots span:nth-child(2){animation-delay:.15s}.dots span:nth-child(3){animation-delay:.3s}
+@keyframes bl{0%,60%,100%{opacity:.25}30%{opacity:1}}
+.chips{display:flex;gap:6px;flex-wrap:wrap;padding:0 14px 8px}
+.chips button{border:1px solid var(--ln);background:var(--bg);border-radius:14px;padding:3px 11px;font-size:13px}.chips button:hover{border-color:var(--pr);color:var(--pr)}
+.af{display:flex;gap:8px;padding:10px 14px;border-top:1px solid var(--ln)}
+.af input{flex:1;border:1px solid var(--ln);border-radius:18px;padding:7px 14px;font:inherit;background:var(--bg);color:var(--fg);outline:none}
+.src{font-size:11.5px;color:var(--mu);padding:0 14px 8px}
+@media (max-width:860px){body{overflow:auto}main{flex-direction:column}.form{overflow:visible}.chat{width:auto;max-width:none;min-width:0;border-left:0;border-top:1px solid var(--ln);overflow:visible}.grid{grid-template-columns:1fr}.nav a{display:none}h1{font-size:26px}.stat{display:none}}
+@media (prefers-reduced-motion:reduce){.dots span{animation:none}}
+.intro{max-width:1200px;margin:0 auto;padding:24px 18px 18px}
+.intro h2{font-size:50px;line-height:1.15;font-weight:600;color:#714b67;margin:0 0 14px}
+.intro p{font-size:17px;line-height:1.65;color:#3d4148;margin:0;max-width:900px}
+.demo{position:relative;display:flex;flex-direction:column;height:720px;max-width:1200px;margin:0 auto 24px;border:1px solid var(--ln);border-radius:8px;overflow:hidden}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .intro h2{color:#a4709a}:root:not([data-theme="light"]) .intro p{color:#c5c9ce}}
+:root[data-theme="dark"] .intro h2{color:#a4709a}:root[data-theme="dark"] .intro p{color:#c5c9ce}
+@media (max-width:860px){.demo main{overflow:auto}}
+@media (max-width:600px){.intro h2{font-size:34px}}
+</style></head>
+<body>
+<div class="intro"><h2>Experience the Odoo Helpdesk app</h2>
+<p>Try it yourself in three simple steps. First, click the colorful <b>AI</b> button at the top right and choose a suggestion such as "Summarize ticket", "Draft a reply" or "Set priority &amp; tags". Next, click <b>Use as reply</b>, or press the <b>✨AI</b> button in the message box, and the email writes itself using the details of the ticket. Finally, read it, click <b>Send</b>, and try the stage buttons, the stars and <b>Close Ticket</b> to see how a request moves through your team. This is a demonstration with sample data, so no real email is sent and nothing is saved.</p></div>
+<div class="demo"><div class="nav">
+  <div class="logo"><i>+</i>Helpdesk</div>
+  <a data-t>Overview</a><a data-t>Tickets</a><a data-t>Reporting</a><a data-t>Configuration</a>
+  <span class="sp"></span>
+  <button class="ic" data-t title="Record">🔴</button>
+  <button class="ic" id="aiBtn" title="AI"><span class="aib">AI</span></button>
+  <button class="ic" data-t title="Messages">💬<span class="bd">9</span></button>
+  <button class="ic" data-t title="Activities">🕒<span class="bd">45</span></button>
+  <button class="ic" data-t title="Settings">🛠</button>
+  <span class="nav-co">Demo Company</span>
+  <div class="av">MA</div>
+</div>
+<div class="cp">
+  <button class="btn" data-t>New</button>
+  <div class="bc"><small>… / <b data-t>Customer Care</b></small><div id="crumb"></div></div>
+  <div class="stat" data-t><span>🛟</span><span><span id="tk">3 Tickets</span><br><span id="op">3 Open</span></span></div>
+  <div class="pg"><span id="pn">2 / 7</span><button id="pv">‹</button><button id="nx">›</button></div>
+</div>
+<main>
+  <div class="form">
+    <div class="bar">
+      <button class="btn" data-t="Intervention planned">Plan Intervention</button>
+      <div class="stages" id="stages"></div>
+    </div>
+    <div class="sheet" id="sheet"></div>
+  </div>
+  <div class="chat">
+    <div class="ct">
+      <button class="t on" data-m="msg">Send message</button><button class="t" data-m="note">Log note</button><button class="t" data-m="act">Activity</button>
+      <span class="sp"></span><span>🔍</span><span>📎</span><span>👤</span>
+    </div>
+    <div class="rc" id="rc">To: <span class="pl">1 Follower</span>Followers only</div>
+    <div class="cmp"><div class="av" style="background:#c9b6e4">MA</div><textarea id="ta" rows="1" placeholder="Send a message to all followers and selected contacts…"></textarea></div>
+    <div class="cb"><button class="btn p" id="send" disabled>Send</button><span class="sp"></span>
+      <button class="g" id="draft" title="Draft with AI"><span class="aib" style="font-size:15px">✨AI</span></button><button class="g" data-t>📎</button><button class="g" data-t>⤢</button></div>
+    <div id="feed"></div>
+  </div>
+</main>
+<div class="ai" id="ai">
+  <div class="ah"><span class="aib">AI</span><div><b>Support Agent</b><small id="ctx"></small></div><button class="x" id="ax">✕</button></div>
+  <div class="al" id="al"></div>
+  <div class="chips" id="chips"></div>
+  <div class="src">Restricted to sources: Product FAQ, Knowledge articles</div>
+  <div class="af"><input id="ai_in" placeholder="Ask the agent…"><button class="btn p" id="ai_go">Ask</button></div>
+</div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const $=s=>document.querySelector(s),esc=s=>s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const D=[["How do I adjust the hinges on my cabinet doors?","Azure Interior, Brandon Freeman","+1 555 555 5556"],["What's the best kitchen cabinet varnish for your home?","Demo Company, Chester Reed","+1 650 555 0181"],["Can I change the delivery date of my wardrobe order?","Gemini Furniture, Edith Sanchez","+1 555 555 0132"],["Is the office desk covered by a warranty?","Deco Addict, Douglas Fletcher","+1 555 555 0127"],["Where can I find the assembly instructions for the shelf?","Ready Mat, Nicole Ford","+1 555 555 0154"],["How do I return a drawer that arrived damaged?","Lumber Inc, Lorraine Douglas","+1 555 555 0119"],["Can I get a refund for the wrong color panel?","The Jackson Group, Ronnie Hart","+1 555 555 0188"]];
+const ST=["New","In Progress","On Hold","Solved","Cancelled"];
+const nm=k=>k.c.split(", ")[1];
+const K=D.map((d,i)=>{const k={t:d[0],c:d[1],ph:d[2],id:String(21+i).padStart(5,"0"),st:0,pri:1,tags:[],m:[]};
+k.m.push({a:"Demo Company",time:"Sep 16, 6:08 PM",auto:1,html:`Dear ${nm(k)},\n\nYour request has been received and is being reviewed by our Customer Care team.\n\nThe reference for your ticket is <b>${k.id}</b>.\n\nTo provide any additional information, simply reply to this email.\n\nFeel free to close your ticket if our help is no longer needed. Thank you for your collaboration.`});return k});
+let cur=1,mode="msg",open=3,menuOn=false;
+const kk=()=>K[cur];
+function toast(t){const e=$("#toast");e.textContent=t;e.classList.add("show");clearTimeout(toast.h);toast.h=setTimeout(()=>e.classList.remove("show"),1800)}
+function rForm(){const k=kk();
+$("#crumb").textContent=k.t;$("#pn").textContent=`${cur+1} / ${K.length}`;$("#op").textContent=open+" Open";
+$("#stages").innerHTML=ST.slice(0,3).map((s,i)=>`<button data-s="${i}" class="${k.st==i?"on":""}">${s}${k.st==i&&i==0?"<em>1d</em>":""}</button>`).join("")+`<button data-menu>…</button><div class="menu ${menuOn?"show":""}">${ST.slice(3).map((s,i)=>`<div data-s="${i+3}">${s}</div>`).join("")}</div>`;
+if(k.st>2)$("#stages").querySelectorAll("button")[3].classList.add("on");
+const stars=[0,1,2].map(i=>`<span data-p="${i+1}" class="${i<k.pri?"":"off"}">${i<k.pri?"★":"☆"}</span>`).join("");
+$("#sheet").innerHTML=`<h1>${esc(k.t)}</h1>
+<div class="pills"><span class="pill">✖ 2 days to start</span><span class="pill">7 days to finish</span><span class="late">🕒 8 days ago</span></div>
+<div class="grid"><div><div class="row"><b>Helpdesk Team</b>Customer Care</div><div class="row"><b>Assigned to</b><span class="av" style="width:28px;height:28px;background:#c9b6e4">MA</span>Mitchell Admin</div><div class="row"><b>Priority</b><span class="stars" id="stars">${stars}</span></div><div class="row"><b>Tags</b><span>${k.tags.map(t=>`<span class="tag">${t}</span>`).join("")}</span></div></div>
+<div><div class="row"><b>Customer</b>${esc(k.c)}</div><div class="row"><b>Phone</b>${k.ph}</div></div></div>
+<div class="tabs"><button class="on" data-tab="0">Description</button><button data-tab="1">Extra Info</button></div>
+<div class="desc" id="desc">Hello,\n\nI would like to know ${esc(k.t)}\n\n\nThank you,\n${esc(nm(k))}</div>`}
+function rFeed(){const k=kk();let h="";const now=k.m.filter(m=>m.now),old=k.m.filter(m=>!m.now);
+const one=m=>`<div class="msg ${m.note?"note":""}"><div class="av" style="background:${m.me?"#c9b6e4":"#dfe3e6"};color:#333">${m.me?"MA":"D"}</div><div class="body"><div class="hd"><b>${m.a}</b><span>${m.note?"📝 Note · ":"✉ "}${m.time}</span></div><div class="txt">${m.html}</div>${m.auto?`<div class="acts"><button class="btn" data-a="view">View Ticket</button><button class="btn" data-a="close">Close Ticket</button></div>`:""}</div></div>`;
+if(now.length)h+=`<div class="sep"><span>Today</span></div>`+now.slice().reverse().map(one).join("");
+h+=`<div class="sep"><span>Sep 16, 2026</span></div>`+old.map(one).join("");$("#feed").innerHTML=h}
+function rAll(){rForm();rFeed()}
+const PH={msg:"Send a message to all followers and selected contacts…",note:"Log an internal note…",act:"Describe the activity to schedule…"};
+function setMode(m){mode=m;document.querySelectorAll(".ct .t").forEach(b=>b.classList.toggle("on",b.dataset.m==m));$("#ta").placeholder=PH[m];$("#send").textContent={msg:"Send",note:"Log",act:"Schedule"}[m];$("#rc").style.display=m=="msg"?"":"none"}
+function chk(){$("#send").disabled=!$("#ta").value.trim()}
+function post(){const v=$("#ta").value.trim();if(!v)return;const k=kk();
+if(mode=="act"){toast("Activity scheduled: "+v.slice(0,40));}
+else{k.m.push({a:"Mitchell Admin",me:1,now:1,note:mode=="note",time:"just now",html:esc(v)});toast(mode=="note"?"Note logged":"Message sent to "+nm(k))}
+$("#ta").value="";chk();rFeed()}
+function type(el,text){el.value="";let i=0;const t=setInterval(()=>{el.value=text.slice(0,i+=4);el.style.height="auto";el.style.height=Math.min(el.scrollHeight,220)+"px";chk();if(i>=text.length)clearInterval(t)},14)}
+/* simulated AI */
+function reply(k){return k.id=="00022"?`Hello ${nm(k)},\n\nThank you for reaching out. For kitchen cabinets we recommend a water-based polyurethane varnish: it is durable, low-odor and resists moisture and stains. Two thin coats with a light sanding in between give the best finish.\n\nLet us know if you'd like product suggestions.\n\nBest regards,\nMitchell Admin`:`Hello ${nm(k)},\n\nThank you for contacting Customer Care about "${k.t}". We have checked our documentation and will get back to you with the details shortly.\n\nBest regards,\nMitchell Admin`}
+function answer(q){const k=kk(),s=q.toLowerCase();
+if(/summar|tl;?dr|recap/.test(s))return{t:`Ticket ${k.id} · Customer Care\n\n• ${nm(k)} (${k.c.split(",")[0]}) asks: "${k.t}"\n• Created 8 days ago, no agent reply yet\n• Automatic acknowledgement email was sent\n• SLA "2 days to start" is overdue`};
+if(/repl|draft|respon|answer|email/.test(s))return{t:"Here's a draft reply based on the Product FAQ:\n\n"+reply(k),btn:["Use as reply","use"]};
+if(/prior|categ|tag|classif|urgen/.test(s))return{t:"Category: Product question\nSuggested priority: ★★☆ (customer has waited 8 days)\nSuggested tag: Product Question",btn:["Apply to ticket","apply"]};
+return{t:"I can summarize this ticket, draft a reply, or set priority and tags. Try one of the suggestions below."}}
+const CH=["Summarize ticket","Draft a reply","Set priority & tags"];
+function greet(){$("#ctx").textContent="Ticket "+kk().id;$("#al").innerHTML="";bub("a",`Hi Mitchell! I'm looking at ticket ${kk().id}. What would you like to do?`);$("#chips").innerHTML=CH.map(c=>`<button data-c="${c}">${c}</button>`).join("")}
+function bub(w,t,btn){const d=document.createElement("div");d.className="b "+w;d.textContent=t;if(btn){const b=document.createElement("button");b.className="btn";b.textContent=btn[0];b.dataset.a=btn[1];d.appendChild(b)}$("#al").appendChild(d);$("#al").scrollTop=1e9;return d}
+function ask(q){if(!q.trim())return;bub("u",q);const d=bub("a","");d.innerHTML='<span class="dots"><span></span><span></span><span></span></span>';const r=answer(q);
+setTimeout(()=>{d.remove();bub("a",r.t,r.btn)},900);$("#ai_in").value=""}
+function openAI(){$("#ai").classList.add("show");if(!$("#al").children.length)greet();$("#ai_in").focus()}
+/* events */
+document.addEventListener("click",e=>{const t=e.target.closest("[data-t],[data-s],[data-p],[data-m],[data-tab],[data-a],[data-c],[data-menu]");
+if(!e.target.closest(".stages"))menuOn&&(menuOn=false,rForm());
+if(!t)return;const d=t.dataset;
+if(d.s!==undefined){kk().st=+d.s;menuOn=false;if(+d.s>=3&&!kk().closed){kk().closed=1;open=Math.max(0,open-1)}rForm();toast("Stage: "+ST[+d.s])}
+else if(d.menu!==undefined){menuOn=!menuOn;rForm();e.stopPropagation()}
+else if(d.p){const n=+d.p;kk().pri=kk().pri==n?0:n;rForm()}
+else if(d.m)setMode(d.m);
+else if(d.tab!==undefined){document.querySelectorAll(".tabs button").forEach(b=>b.classList.toggle("on",b==t));$("#desc").textContent=d.tab=="0"?`Hello,\n\nI would like to know ${kk().t}\n\n\nThank you,\n${nm(kk())}`:"Source: Email alias · Company: "+kk().c.split(",")[0]+" · Language: English"}
+else if(d.c)ask(d.c);
+else if(d.a=="view")toast("Customer portal view opens here (demo)");
+else if(d.a=="close"){kk().st=3;if(!kk().closed){kk().closed=1;open=Math.max(0,open-1)}rForm();toast("Ticket "+kk().id+" closed")}
+else if(d.a=="use"){setMode("msg");type($("#ta"),reply(kk()));toast("Reply added to the composer")}
+else if(d.a=="apply"){const k=kk();k.pri=2;if(!k.tags.includes("Product Question"))k.tags.push("Product Question");rForm();toast("Priority and tag applied")}
+else if("t" in d)toast(d.t||"Not available in this demo")});
+$("#ta").addEventListener("input",e=>{chk();e.target.style.height="auto";e.target.style.height=Math.min(e.target.scrollHeight,220)+"px"});
+$("#send").onclick=post;
+$("#draft").onclick=()=>{setMode("msg");type($("#ta"),reply(kk()));toast("AI drafted a reply. Review it before sending.")};
+$("#aiBtn").onclick=openAI;$("#ax").onclick=()=>$("#ai").classList.remove("show");
+$("#ai_go").onclick=()=>ask($("#ai_in").value);$("#ai_in").addEventListener("keydown",e=>{if(e.key=="Enter")ask(e.target.value)});
+const go=n=>{cur=(cur+n+K.length)%K.length;$("#ta").value="";chk();rAll();if($("#al").children.length)greet()};
+$("#pv").onclick=()=>go(-1);$("#nx").onclick=()=>go(1);
+rAll();
+</script>
+</body></html>
